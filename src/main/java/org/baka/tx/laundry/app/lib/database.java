@@ -46,30 +46,36 @@ public class database {
     
     public void setupTable() {
         try (Connection conn = this.connect(); Statement stmt = conn.createStatement()){
-            String sqlAdmin = "CREATE TABLE IF NOT EXISTS admin " +
+            String sqlAdmin = "CREATE TABLE IF NOT EXISTS `admin` " +
                         "(id INT PRIMARY KEY NOT NULL," +
                         "username CHAR(50) NOT NULL, " +
-                        "password CHAR(50))"; 
+                        "password CHAR(50) NOT NULL, " +
+                        "created_at DATETIME NOT NULL, " +                        
+                        "updated_at DATETIME NOT NULL)"; 
             
             stmt.executeUpdate(sqlAdmin);
             
-            String sqlCustomer = "CREATE TABLE IF NOT EXISTS customer " +
+            String sqlCustomer = "CREATE TABLE IF NOT EXISTS `customer` " +
                         "(id INT PRIMARY KEY NOT NULL," +
                         "nama CHAR(100) NOT NULL, " +
                         "alamat CHAR(255) NOT NULL, " +
-                        "kontak CHAR(255))"; 
+                        "kontak CHAR(255) NOT NULL, " +
+                        "created_at DATETIME NOT NULL, " +                        
+                        "updated_at DATETIME NOT NULL)";
             
             stmt.executeUpdate(sqlCustomer);
             
-            String sqlOrder = "CREATE TABLE IF NOT EXISTS order " +
-                        "(id INT PRIMARY KEY NOT NULL," +
+            String sqlOrder = "CREATE TABLE IF NOT EXISTS `order` " +
+                        "(id INT PRIMARY KEY NOT NULL, " +
                         "admin_id INT NOT NULL, " +                        
                         "customer_id INT NOT NULL, " +
-                        "tgl_mulai INT NOT NULL, " +
-                        "tgl_selesai INT NOT NULL, " +
-                        "apakah_di_antar INT NOT NULL, " +
-                        "jenis INT NOT NULL, " +
-                        "status CHAR(50) NOT NULL )"; 
+                        "tgl_mulai DATETIME NOT NULL, " +
+                        "tgl_selesai DATETIME NOT NULL, " +
+                        "apakah_di_antar BOOLEAN NOT NULL DEFAULT FALSE, " +
+                        "jenis CHAR(50) NOT NULL, " +
+                        "status CHAR(50) NOT NULL, " +
+                        "created_at DATETIME NOT NULL, " +                        
+                        "updated_at DATETIME NOT NULL)";
             
             stmt.executeUpdate(sqlOrder);
             
