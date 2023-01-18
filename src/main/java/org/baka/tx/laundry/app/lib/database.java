@@ -35,6 +35,7 @@ public class database {
             if (conn != null) {
                 System.out.println("[DB] Koneksi SQLite berhasil yay!");
                 conn.close();
+                this.setupTable();
             } else {
                 System.out.println("[DB] Konek SQLite gagal! sadkek");
             }
@@ -44,8 +45,35 @@ public class database {
     }
     
     public void setupTable() {
-        try (Connection conn = this.connect()){
-            // Todo membuat table app
+        try (Connection conn = this.connect(); Statement stmt = conn.createStatement()){
+            String sqlAdmin = "CREATE TABLE IF NOT EXISTS admin " +
+                        "(id INT PRIMARY KEY NOT NULL," +
+                        "username CHAR(50) NOT NULL, " +
+                        "password CHAR(50))"; 
+            
+            stmt.executeUpdate(sqlAdmin);
+            
+            String sqlCustomer = "CREATE TABLE IF NOT EXISTS customer " +
+                        "(id INT PRIMARY KEY NOT NULL," +
+                        "nama CHAR(100) NOT NULL, " +
+                        "alamat CHAR(255) NOT NULL, " +
+                        "kontak CHAR(255))"; 
+            
+            stmt.executeUpdate(sqlCustomer);
+            
+            String sqlOrder = "CREATE TABLE IF NOT EXISTS order " +
+                        "(id INT PRIMARY KEY NOT NULL," +
+                        "admin_id INT NOT NULL, " +                        
+                        "customer_id INT NOT NULL, " +
+                        "tgl_mulai INT NOT NULL, " +
+                        "tgl_selesai INT NOT NULL, " +
+                        "apakah_di_antar INT NOT NULL, " +
+                        "jenis INT NOT NULL, " +
+                        "status CHAR(50) NOT NULL )"; 
+            
+            stmt.executeUpdate(sqlOrder);
+            
+            stmt.close();
             conn.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
