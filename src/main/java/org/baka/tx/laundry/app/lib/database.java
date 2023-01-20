@@ -46,17 +46,23 @@ public class database {
     
     public void setupTable() {
         try (Connection conn = this.connect(); Statement stmt = conn.createStatement()){
-            String sqlAdmin = "CREATE TABLE IF NOT EXISTS `admin` " +
-                        "(id INT PRIMARY KEY NOT NULL," +
+            String sqlAdmin = "BEGIN TRANSACTION;" +
+                        "CREATE TABLE IF NOT EXISTS `admin` " +
+                        "(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +
                         "username CHAR(50) NOT NULL, " +
                         "password CHAR(50) NOT NULL, " +
                         "created_at DATETIME NOT NULL, " +                        
-                        "updated_at DATETIME NOT NULL)"; 
+                        "updated_at DATETIME NOT NULL);" +
+                        "INSERT INTO admin" +                        
+                        "(username, password, created_at, updated_at)" +
+                        "VALUES" +
+                        "('admin', 'ok123', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);" +
+                        "COMMIT;";
             
             stmt.executeUpdate(sqlAdmin);
             
             String sqlCustomer = "CREATE TABLE IF NOT EXISTS `customer` " +
-                        "(id INT PRIMARY KEY NOT NULL," +
+                        "(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +
                         "nama CHAR(100) NOT NULL, " +
                         "alamat CHAR(255) NOT NULL, " +
                         "kontak CHAR(255) NOT NULL, " +
@@ -66,7 +72,7 @@ public class database {
             stmt.executeUpdate(sqlCustomer);
             
             String sqlOrder = "CREATE TABLE IF NOT EXISTS `order` " +
-                        "(id INT PRIMARY KEY NOT NULL, " +
+                        "(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, " +
                         "admin_id INT NOT NULL, " +                        
                         "customer_id INT NOT NULL, " +
                         "tgl_mulai DATETIME NOT NULL, " +
