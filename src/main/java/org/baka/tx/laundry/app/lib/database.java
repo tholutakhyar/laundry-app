@@ -34,8 +34,8 @@ public class database {
         try (Connection conn = this.connect()){
             if (conn != null) {
                 System.out.println("[DB] Koneksi SQLite berhasil yay!");
-                conn.close();
                 this.setupTable();
+                conn.close();
             } else {
                 System.out.println("[DB] Konek SQLite gagal! sadkek");
             }
@@ -57,7 +57,7 @@ public class database {
                         "INSERT INTO admin" +                        
                         "(username, password, created_at, updated_at)" +
                         "VALUES" +
-                        "('admin', 'ok123', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);" +
+                        "('admin', 'ok', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);" +
                         "COMMIT;";
             
             stmt.executeUpdate(sqlAdmin);
@@ -81,7 +81,9 @@ public class database {
                         "apakah_di_antar BOOLEAN NOT NULL DEFAULT FALSE, " +
                         "jenis CHAR(50) NOT NULL, " +
                         "status CHAR(50) NOT NULL, " +
-                        "created_at DATETIME NOT NULL, " +                        
+                        "harga_total INT NOT NULL, " +
+                        "harga_dibayar INT NOT NULL, " +
+                        "created_at DATETIME NOT NULL, " +                      
                         "updated_at DATETIME NOT NULL)";
             
             stmt.executeUpdate(sqlOrder);

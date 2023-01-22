@@ -4,6 +4,7 @@
  */
 package org.baka.tx.laundry.app;
 
+import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 import org.baka.tx.laundry.app.lib.database;
 
@@ -17,12 +18,37 @@ public class Login extends javax.swing.JFrame {
      * Creates new form Login
      */
     database db;
+    Dashboard dashboard;
     
     public Login() {
         initComponents();
         this.setLocationRelativeTo(null);
         db = new database();
         db.testConnection();
+        
+        dashboard = new Dashboard();
+    }
+    
+    private void doLogin() {
+        String username = fieldUsername.getText();
+        String password = fieldPassword.getText(); // tbh shouldbe getPassword() so it's encrypted but forget it lol
+        
+        if (username.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tolong isi Username!", "Kesalahan", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (!username.isEmpty() && password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tolong isi Password!", "Kesalahan", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (db.isLoginInfoCorrect(username, password)) {
+            dashboard.setVisible(true);
+            this.setVisible(false);
+        } else {
+            JOptionPane.showMessageDialog(this, "Username atau password salah!", "Gagal Masuk!", JOptionPane.ERROR_MESSAGE);
+        }  
     }
 
     /**
@@ -53,9 +79,21 @@ public class Login extends javax.swing.JFrame {
             }
         });
 
+        fieldUsername.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                fieldUsernameKeyPressed(evt);
+            }
+        });
+
         jLabel2.setText("Username");
 
         jLabel3.setText("Password");
+
+        fieldPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                fieldPasswordKeyPressed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -95,27 +133,18 @@ public class Login extends javax.swing.JFrame {
 
     private void buttonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoginActionPerformed
         // TODO add your handling code here:
-        String username = fieldUsername.getText();
-        String password = fieldPassword.getText(); // tbh shouldbe getPassword() so it's encrypted but forget it lol
-        
-        if (username.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Tolong isi Username!", "Kesalahan", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        if (!username.isEmpty() && password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Tolong isi Password!", "Kesalahan", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        if (db.isLoginInfoCorrect(username, password)) {
-            Dashboard dashboard = new Dashboard();
-            dashboard.setVisible(true);
-            this.setVisible(false);
-        } else {
-            JOptionPane.showMessageDialog(this, "Username atau password salah!", "Gagal Masuk!", JOptionPane.ERROR_MESSAGE);
-        }  
+        this.doLogin();
     }//GEN-LAST:event_buttonLoginActionPerformed
+
+    private void fieldPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldPasswordKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) this.doLogin();
+    }//GEN-LAST:event_fieldPasswordKeyPressed
+
+    private void fieldUsernameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldUsernameKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) this.doLogin();
+    }//GEN-LAST:event_fieldUsernameKeyPressed
 
     /**
      * @param args the command line arguments

@@ -4,6 +4,9 @@
  */
 package org.baka.tx.laundry.app;
 
+import javax.swing.JTabbedPane;
+import org.baka.tx.laundry.app.lib.database;
+
 /**
  *
  * @author tx
@@ -13,9 +16,19 @@ public class Dashboard extends javax.swing.JFrame {
     /**
      * Creates new form Dashboard
      */
+    OrderAdd od;
+    database db = null;
     public Dashboard() {
         initComponents();
         this.setLocationRelativeTo(null);
+        od = new OrderAdd();
+        od.setAlwaysOnTop(true);
+        od.setLocationRelativeTo(null);
+        db = new database();
+    }
+    
+    private void refreshOrderTable() {
+        
     }
 
     /**
@@ -47,13 +60,19 @@ public class Dashboard extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         cbOrderStatus = new javax.swing.JComboBox<>();
         jTextField1 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        Order_ButtonTambah = new javax.swing.JButton();
         TabCustomer = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("sansserif", 1, 18)); // NOI18N
         jLabel1.setText("Dashboard");
+
+        MainTab.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                MainTabStateChanged(evt);
+            }
+        });
 
         LabelSelamatDatang.setFont(new java.awt.Font("sansserif", 3, 14)); // NOI18N
         LabelSelamatDatang.setText("Selamat Datang, Admin!");
@@ -164,7 +183,12 @@ public class Dashboard extends javax.swing.JFrame {
 
         cbOrderStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Semua", "Proses", "Diantar", "Selesai" }));
 
-        jButton1.setText("Tambah");
+        Order_ButtonTambah.setText("Tambah");
+        Order_ButtonTambah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Order_ButtonTambahActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout TabOrderLayout = new javax.swing.GroupLayout(TabOrder);
         TabOrder.setLayout(TabOrderLayout);
@@ -176,7 +200,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(Order_ButtonTambah, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         TabOrderLayout.setVerticalGroup(
             TabOrderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -185,7 +209,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addGroup(TabOrderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cbOrderStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
+                    .addComponent(Order_ButtonTambah))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -229,6 +253,23 @@ public class Dashboard extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void Order_ButtonTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Order_ButtonTambahActionPerformed
+        // TODO add your handling code here:
+        od.setVisible(true);
+    }//GEN-LAST:event_Order_ButtonTambahActionPerformed
+
+    private void MainTabStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_MainTabStateChanged
+        // TODO add your handling code here:
+        JTabbedPane sourceTabbedPane = (JTabbedPane) evt.getSource();
+        int indexTab = sourceTabbedPane.getSelectedIndex();
+        String nameTab = sourceTabbedPane.getTitleAt(indexTab);
+        System.out.println("Tab Changed: " + nameTab);
+        
+        if (nameTab.equals("Order")) {
+            this.refreshOrderTable();
+        }
+    }//GEN-LAST:event_MainTabStateChanged
 
     /**
      * @param args the command line arguments
@@ -279,11 +320,11 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JLabel LabelHIOrderSelesai;
     private javax.swing.JLabel LabelSelamatDatang;
     private javax.swing.JTabbedPane MainTab;
+    private javax.swing.JButton Order_ButtonTambah;
     private javax.swing.JPanel TabBeranda;
     private javax.swing.JPanel TabCustomer;
     private javax.swing.JPanel TabOrder;
     private javax.swing.JComboBox<String> cbOrderStatus;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
