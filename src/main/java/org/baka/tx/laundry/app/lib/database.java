@@ -16,7 +16,7 @@ import java.sql.Statement;
  */
 public class database {
     
-    public Connection connect() {
+    private Connection connect() {
         String userHomeDir = System.getProperty("user.home");
         String dbUrl = "jdbc:sqlite:" + userHomeDir + "/laundryapp.db";
         Connection conn = null;
@@ -53,6 +53,7 @@ public class database {
                         "password CHAR(50) NOT NULL, " +
                         "created_at DATETIME NOT NULL, " +                        
                         "updated_at DATETIME NOT NULL);" +
+                        "CREATE UNIQUE INDEX admin_username ON admin(username);" +
                         "INSERT INTO admin" +                        
                         "(username, password, created_at, updated_at)" +
                         "VALUES" +
@@ -92,12 +93,27 @@ public class database {
         }
     }
     
-    public void query(String sql) {
-        try (Connection conn = this.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)){
-            // Todo membuat query code
+    public ResultSet query(String sql) {
+        ResultSet rs = null;
+        try (Connection conn = this.connect(); Statement stmt = conn.createStatement();){
+            rs = stmt.executeQuery(sql);
             conn.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        } finally {
+            return rs;
         }
+    }
+    
+    public boolean isLoginInfoCorrect(String username, String password) {
+        String sql = String.format("SELECT username, password FROM admin WHERE username = '%s' AND password = '%s' ", username, password);
+        try (Connection conn = this.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql);) {
+            conn.close();
+            if (rs.next()) return true;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        return false;
     }
 }
