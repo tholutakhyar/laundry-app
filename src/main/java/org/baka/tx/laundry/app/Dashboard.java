@@ -71,6 +71,7 @@ public class Dashboard extends javax.swing.JFrame {
 
         this.refreshOrderTable();
         this.refreshCustomerTable();
+        this.refreshBeranda();
     }
 
     private void refreshOrderTable() {
@@ -117,6 +118,16 @@ public class Dashboard extends javax.swing.JFrame {
         }
 
     }
+    
+    private void refreshBeranda() {
+        if (this.db != null) {
+            LabelHIDalamPengiriman.setText(String.valueOf(this.db.getCountOrderOnDeliveryToday()));
+            LabelHIDalamProses.setText(String.valueOf(this.db.getCountOrderProcessToday()));
+            LabelHIOrderSelesai.setText(String.valueOf(this.db.getCountOrderFinishedToday()));
+
+            LabelBIOrderSelesai.setText(String.valueOf(this.db.getCountOrderFinishedThisMonth()));
+        }
+    }
 
     public void setAdmin(admin admin) {
         this.admin = admin;
@@ -157,12 +168,14 @@ public class Dashboard extends javax.swing.JFrame {
         Customer_ButtonTambah = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         customerTable = new javax.swing.JTable();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Laundry Sanjaya - Dashboard");
 
         jLabel1.setFont(new java.awt.Font("sansserif", 1, 18)); // NOI18N
         jLabel1.setText("Dashboard");
+        jLabel1.setDisabledIcon(null);
 
         MainTab.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -384,6 +397,8 @@ public class Dashboard extends javax.swing.JFrame {
 
         MainTab.addTab("Customer", TabCustomer);
 
+        jLabel2.setText("Project UAS - Tholut Akhyar - 21201040");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -391,18 +406,21 @@ public class Dashboard extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(MainTab, javax.swing.GroupLayout.PREFERRED_SIZE, 566, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel1)
+                    .addComponent(MainTab, javax.swing.GroupLayout.PREFERRED_SIZE, 566, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(18, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(18, 18, 18)
+                .addGap(24, 24, 24)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(MainTab, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(17, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addContainerGap(11, Short.MAX_VALUE))
         );
 
         pack();
@@ -435,7 +453,9 @@ public class Dashboard extends javax.swing.JFrame {
             this.refreshOrderTable();
         } else if (nameTab.equals("Customer")) {
             this.refreshCustomerTable();
-        }
+        } else if (nameTab.equals("Beranda")) {
+            this.refreshBeranda();
+        } 
     }//GEN-LAST:event_MainTabStateChanged
 
     private void fieldCariOrderTableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldCariOrderTableKeyReleased
@@ -571,6 +591,7 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JTextField fieldCariCustomerTable;
     private javax.swing.JTextField fieldCariOrderTable;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable orderTable;

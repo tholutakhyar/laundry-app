@@ -136,7 +136,6 @@ public class database {
                 customer.setAlamat(rs.getString("alamat"));
                 customer.setKontak(rs.getString("kontak"));
             }
-            System.out.println(customer.getAlamat());
             
             stmt.close();
             conn.close();
@@ -145,6 +144,80 @@ public class database {
             return customer;
         } finally {
             return customer;
+        }
+    }
+    
+    public int getCountOrderProcessToday() {
+        String sql = "SELECT COUNT(id) as jumlah FROM `order` WHERE `status` = 'proses'";
+        int count = 0;
+        try (Connection conn = this.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql);) {
+            if (rs.next()) {
+                count = rs.getInt("jumlah");
+            }
+            
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return 0;
+        } finally {
+            return count;
+        }
+    }
+    
+    public int getCountOrderOnDeliveryToday() {
+        String sql = "SELECT COUNT(id) as jumlah FROM `order` WHERE `status` = 'diantar'";
+        int count = 0;
+        try (Connection conn = this.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql);) {
+            if (rs.next()) {
+                count = rs.getInt("jumlah");
+            }
+            
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return 0;
+        } finally {
+            return count;
+        }
+    }
+    
+    public int getCountOrderFinishedToday() {
+        String today = new SimpleDateFormat("yyyy-MM-dd").format(new Date()).toString() + " 00:00:00";
+        String sql = String.format("SELECT COUNT(id) as jumlah FROM `order` WHERE `status` = 'selesai' AND updated_at >= '%s'", today);
+        int count = 0;
+        try (Connection conn = this.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql);) {
+            if (rs.next()) {
+                count = rs.getInt("jumlah");
+            }
+            
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return 0;
+        } finally {
+            return count;
+        }
+    }
+    
+    public int getCountOrderFinishedThisMonth() {
+        // Should Query this month, Fix this later
+        String sql = "SELECT COUNT(id) as jumlah FROM `order` WHERE `status` = 'selesai'";
+        int count = 0;
+        try (Connection conn = this.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql);) {
+            if (rs.next()) {
+                count = rs.getInt("jumlah");
+            }
+            
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return 0;
+        } finally {
+            return count;
         }
     }
     
