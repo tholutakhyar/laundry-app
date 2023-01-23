@@ -32,17 +32,19 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
                           <Component id="fieldHargaPay" alignment="0" max="32767" attributes="0"/>
-                          <Component id="jLabel1" alignment="0" pref="227" max="32767" attributes="0"/>
+                          <Component id="jLabel1" alignment="0" max="32767" attributes="0"/>
                           <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="fieldCustomerAlamat" alignment="0" max="32767" attributes="0"/>
                           <Component id="jLabel4" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="fieldCustomerKontak" alignment="0" max="32767" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="fieldCustomerId" min="-2" pref="159" max="-2" attributes="0"/>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="fieldCustomerId" min="-2" pref="97" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="buttonPilihCustomer" pref="0" max="32767" attributes="0"/>
+                              <Component id="buttonPilihCustomer" min="-2" pref="56" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="buttonBatalPilihCustomer" min="-2" pref="62" max="-2" attributes="0"/>
                           </Group>
                           <Component id="fieldCustomerNama" alignment="0" max="32767" attributes="0"/>
                           <Component id="jLabel10" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -91,6 +93,7 @@
                                       <Group type="103" groupAlignment="3" attributes="0">
                                           <Component id="fieldCustomerId" alignment="3" min="-2" max="-2" attributes="0"/>
                                           <Component id="buttonPilihCustomer" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="buttonBatalPilihCustomer" alignment="3" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <Group type="102" attributes="0">
@@ -358,6 +361,14 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Harga Per Kg"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="buttonBatalPilihCustomer">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Batal"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonBatalPilihCustomerActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

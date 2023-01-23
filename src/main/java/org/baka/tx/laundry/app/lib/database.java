@@ -126,6 +126,28 @@ public class database {
         return false;
     }
     
+    public customer getCustomer(String id) {
+        String sql = String.format("SELECT * FROM customer WHERE id = %d ", Integer.parseInt(id));
+        customer customer = new customer();
+        try (Connection conn = this.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql);) {
+            if (rs.next()) {
+                customer.setId(rs.getInt("id"));
+                customer.setNama(rs.getString("nama"));
+                customer.setAlamat(rs.getString("alamat"));
+                customer.setKontak(rs.getString("kontak"));
+            }
+            System.out.println(customer.getAlamat());
+            
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return customer;
+        } finally {
+            return customer;
+        }
+    }
+    
     public int addCustomer(customer customer) {
         int id = 0;
         try (Connection conn = this.connect(); Statement stmt = conn.createStatement()) {
