@@ -4,8 +4,12 @@
  */
 package org.baka.tx.laundry.app;
 
+import java.util.Date;
 import javax.swing.JOptionPane;
 import org.baka.tx.laundry.app.lib.database;
+import org.baka.tx.laundry.app.model.admin;
+import org.baka.tx.laundry.app.model.customer;
+import org.baka.tx.laundry.app.model.order;
 
 /**
  *
@@ -17,14 +21,25 @@ public class OrderAdd extends javax.swing.JFrame {
      * Creates new form Login
      */
     database db;
+    order order;
+    admin admin;
     
     public OrderAdd() {
         initComponents();
         this.setLocationRelativeTo(null);
-        this.showPerKgPrice();
+        db = new database();
+    }
+    
+    public void setAdmin(admin admin) {
+        this.admin = admin;
     }
     
     public void resetForm() {
+        order = new order();
+        order.setAdmin(admin);
+        cbJenisCucian.setSelectedIndex(0);
+        String jenis = cbJenisCucian.getSelectedItem().toString();
+        order.setJenis(jenis);
         fieldCustomerId.setText(null);
         fieldCustomerNama.setText(null);
         fieldCustomerAlamat.setText(null);
@@ -38,106 +53,46 @@ public class OrderAdd extends javax.swing.JFrame {
     }
     
     private void showPerKgPrice() {
-        String orderJenisCucian = cbJenisCucian.getSelectedItem().toString();
-        fieldHargaPerKg.setText(String.valueOf(this.getHarga(orderJenisCucian)));
+        fieldHargaPerKg.setText(String.valueOf(order.getHargaPerKg()));
     }
     
     private void calculateOrder() {
         this.showPerKgPrice();
-        int orderTotalBerat = 0;
-        int customerPay = 0;
-        int hargaOrder = 0;
-        
-        try {
-            hargaOrder = Integer.parseInt(fieldHargaPerKg.getText());
-            orderTotalBerat = Integer.parseInt(fieldTotalBerat.getText());
-            customerPay = Integer.parseInt(fieldCustomerPay.getText());
-        } catch (NumberFormatException e) {}
-        
-        int hargaTotal = orderTotalBerat * hargaOrder;
-        int payCharge = customerPay - hargaTotal;
-        fieldHargaPay.setText(String.valueOf(hargaTotal));
-        fieldCustomerPayChange.setText(String.valueOf(payCharge));
-        fieldHargaPerKg.setText(String.valueOf(hargaOrder));
-    }
-    
-    private int getHarga(String jenis) {
-        int harga = 0;
-        switch (jenis) {
-            case "Cuci Biasa":
-                harga = 1500;
-                break;
-            case "Cuci + Strika":
-                harga = 3000;
-                break;
-            case "Cuci Kilat":
-                harga = 5000;
-                break;
-            case "Cuci Boneka":
-                harga = 3000;
-                break;
-            case "Cuci Selimut":
-                harga = 2500;
-                break;
-            case "Cuci Mobil":
-                harga = 4000;
-                break;
-            default:
-                break;
-        }
-        return harga;
+        fieldHargaPay.setText(String.valueOf(order.getTotalHarga()));
+        fieldCustomerPayChange.setText(String.valueOf(order.getJumlahKembalian()));
     }
     
     private void doTambahOrder() {
-        String customerID = fieldCustomerId.getText();
-        String customerNama = fieldCustomerNama.getText();
-        String customerAlamat = fieldCustomerAlamat.getText();
-        String customerKontak = fieldCustomerKontak.getText();
-        
-        String orderMulai = dateMulai.getDateFormatString();
-        String orderSelesai = dateSelesai.getDateFormatString();
-        String orderJenisCucian = cbJenisCucian.getSelectedItem().toString();
-        boolean orderDiantar = cbDiantar.isSelected();
-        int orderTotalKg = 0;
-        int orderCustomerPay = 0;
-        int orderTotalHarga = 0;
-        
-        try {
-            orderTotalKg = Integer.parseInt(fieldTotalBerat.getText());
-            orderCustomerPay = Integer.parseInt(fieldCustomerPay.getText());
-            orderTotalHarga = Integer.parseInt(fieldHargaPay.getText());
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Tolong isi field dengan angka!", "Kesalahan", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        if (orderMulai.isEmpty()) {
+        if (order.getTglMulai() == null) {
             JOptionPane.showMessageDialog(this, "Tolong isi Tgl Mulai!", "Kesalahan", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
-        if (orderSelesai.isEmpty()) {
+        if (order.getTglSelesai() == null) {
             JOptionPane.showMessageDialog(this, "Tolong isi Tgl Selesai!", "Kesalahan", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
-        if (customerNama.isEmpty() || customerAlamat.isEmpty()|| customerKontak.isEmpty()) {
+        if (!order.customer().isFilled()) {
             JOptionPane.showMessageDialog(this, "Tolong isi Detail Customer", "Kesalahan", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
-        
-        if (orderTotalKg <= 0) {
+        if (order.getTotalBerat() <= 0) {
             JOptionPane.showMessageDialog(this, "Tolong isi Total Kilo Dengan Benar", "Kesalahan", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
-        if (orderTotalHarga > orderCustomerPay) {
+        if (!order.isKembalianCorrect()) {
             JOptionPane.showMessageDialog(this, "Maaf Uang pembayaran Kurang!", "Kesalahan", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
-        this.setVisible(false);
+        if (this.db.addOrder(order)) {
+            this.setVisible(false);
+        } else {
+            JOptionPane.showMessageDialog(this, "Maaf Ada sedikit gangguan, Silahkan Ulangi Lagi!", "Kesalahan", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -193,14 +148,37 @@ public class OrderAdd extends javax.swing.JFrame {
 
         fieldCustomerId.setEditable(false);
         fieldCustomerId.setForeground(new java.awt.Color(153, 153, 153));
+        fieldCustomerId.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                fieldCustomerIdKeyReleased(evt);
+            }
+        });
+
+        fieldCustomerNama.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                fieldCustomerNamaKeyTyped(evt);
+            }
+        });
 
         jLabel2.setText("Customer Id");
 
         jLabel3.setText("Nama");
 
+        fieldCustomerAlamat.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                fieldCustomerAlamatKeyReleased(evt);
+            }
+        });
+
         jLabel4.setText("Alamat");
 
         jLabel5.setText("Kontak");
+
+        fieldCustomerKontak.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                fieldCustomerKontakKeyReleased(evt);
+            }
+        });
 
         jButton2.setText("Pilih");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -225,6 +203,18 @@ public class OrderAdd extends javax.swing.JFrame {
         });
 
         jLabel7.setText("Total Berat (Kg)");
+
+        dateSelesai.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                dateSelesaiPropertyChange(evt);
+            }
+        });
+
+        dateMulai.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                dateMulaiPropertyChange(evt);
+            }
+        });
 
         jLabel8.setText("Tgl Selesai");
 
@@ -412,18 +402,71 @@ public class OrderAdd extends javax.swing.JFrame {
 
     private void fieldTotalBeratKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldTotalBeratKeyReleased
         // TODO add your handling code here:
+        try {
+            order.setTotalBerat(Integer.parseInt(fieldTotalBerat.getText()));
+        } catch (NumberFormatException e) {
+            order.setTotalBerat(0);
+        }
         this.calculateOrder();
     }//GEN-LAST:event_fieldTotalBeratKeyReleased
 
     private void fieldCustomerPayKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldCustomerPayKeyReleased
         // TODO add your handling code here:
+        try {
+            order.setJumlahDibayar(Integer.parseInt(fieldCustomerPay.getText()));
+        } catch (NumberFormatException e) {
+            order.setJumlahDibayar(0);
+        }
         this.calculateOrder();
     }//GEN-LAST:event_fieldCustomerPayKeyReleased
 
     private void cbJenisCucianItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbJenisCucianItemStateChanged
         // TODO add your handling code here:
+        order.setJenis(cbJenisCucian.getSelectedItem().toString());
         this.calculateOrder();
     }//GEN-LAST:event_cbJenisCucianItemStateChanged
+
+    private void fieldCustomerNamaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldCustomerNamaKeyTyped
+        // TODO add your handling code here:
+        order.customer().setNama(fieldCustomerNama.getText());
+    }//GEN-LAST:event_fieldCustomerNamaKeyTyped
+
+    private void fieldCustomerAlamatKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldCustomerAlamatKeyReleased
+        // TODO add your handling code here:
+        order.customer().setAlamat(fieldCustomerAlamat.getText());
+    }//GEN-LAST:event_fieldCustomerAlamatKeyReleased
+
+    private void fieldCustomerKontakKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldCustomerKontakKeyReleased
+        // TODO add your handling code here:
+        order.customer().setKontak(fieldCustomerKontak.getText());
+    }//GEN-LAST:event_fieldCustomerKontakKeyReleased
+
+    private void fieldCustomerIdKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldCustomerIdKeyReleased
+        // TODO add your handling code here:
+        try {
+            order.customer().setId(Integer.parseInt(fieldCustomerPay.getText()));
+        } catch (NumberFormatException e) {
+            order.customer().setId(0);
+        }
+    }//GEN-LAST:event_fieldCustomerIdKeyReleased
+
+    private void dateMulaiPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_dateMulaiPropertyChange
+        // TODO add your handling code here:
+        if ("date".equals(evt.getPropertyName())) {
+            try {
+                order.setTglMulai((Date) evt.getNewValue());
+            } catch (Exception e) {}
+        }
+    }//GEN-LAST:event_dateMulaiPropertyChange
+
+    private void dateSelesaiPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_dateSelesaiPropertyChange
+        // TODO add your handling code here:
+        if ("date".equals(evt.getPropertyName())) {
+            try {
+                order.setTglSelesai((Date) evt.getNewValue());
+            } catch (Exception e) {}
+        }
+    }//GEN-LAST:event_dateSelesaiPropertyChange
 
     /**
      * @param args the command line arguments

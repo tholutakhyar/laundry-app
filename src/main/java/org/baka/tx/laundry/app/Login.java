@@ -7,6 +7,7 @@ package org.baka.tx.laundry.app;
 import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 import org.baka.tx.laundry.app.lib.database;
+import org.baka.tx.laundry.app.model.admin;
 
 /**
  *
@@ -45,6 +46,8 @@ public class Login extends javax.swing.JFrame {
         
         if (db.isLoginInfoCorrect(username, password)) {
             dashboard.setVisible(true);
+            admin admin = new admin(1, username, password);
+            dashboard.setAdmin(admin);
             this.setVisible(false);
         } else {
             JOptionPane.showMessageDialog(this, "Username atau password salah!", "Gagal Masuk!", JOptionPane.ERROR_MESSAGE);

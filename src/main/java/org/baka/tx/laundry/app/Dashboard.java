@@ -6,6 +6,7 @@ package org.baka.tx.laundry.app;
 
 import javax.swing.JTabbedPane;
 import org.baka.tx.laundry.app.lib.database;
+import org.baka.tx.laundry.app.model.admin;
 
 /**
  *
@@ -18,6 +19,7 @@ public class Dashboard extends javax.swing.JFrame {
      */
     OrderAdd od;
     database db = null;
+    admin admin;
     public Dashboard() {
         initComponents();
         this.setLocationRelativeTo(null);
@@ -29,6 +31,10 @@ public class Dashboard extends javax.swing.JFrame {
     
     private void refreshOrderTable() {
         
+    }
+    
+    public void setAdmin(admin admin) {
+        admin = admin;
     }
 
     /**
@@ -256,6 +262,7 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void Order_ButtonTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Order_ButtonTambahActionPerformed
         // TODO add your handling code here:
+        od.setAdmin(admin);
         od.resetForm();
         od.setVisible(true);
     }//GEN-LAST:event_Order_ButtonTambahActionPerformed
