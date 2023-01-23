@@ -4,7 +4,16 @@
  */
 package org.baka.tx.laundry.app;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.regex.PatternSyntaxException;
 import javax.swing.JTabbedPane;
+import javax.swing.RowFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import org.baka.tx.laundry.app.lib.database;
 import org.baka.tx.laundry.app.model.admin;
 
@@ -20,6 +29,13 @@ public class Dashboard extends javax.swing.JFrame {
     OrderAdd od;
     database db = null;
     admin admin;
+    private DefaultTableModel orderModel;
+    final TableRowSorter<TableModel> orderSorter;
+    
+    private DefaultTableModel customerModel;
+    final TableRowSorter<TableModel> customerSorter;
+    private String orderShow = "Semua";
+
     public Dashboard() {
         initComponents();
         this.setLocationRelativeTo(null);
@@ -27,12 +43,81 @@ public class Dashboard extends javax.swing.JFrame {
         od.setAlwaysOnTop(true);
         od.setLocationRelativeTo(null);
         db = new database();
-    }
-    
-    private void refreshOrderTable() {
+
+        this.orderModel = new DefaultTableModel();
+        this.orderTable.setModel(this.orderModel);
         
+        this.orderModel.addColumn("Order ID");
+        this.orderModel.addColumn("Customer");
+        this.orderModel.addColumn("Jenis");
+        this.orderModel.addColumn("Tgl Mulai");
+        this.orderModel.addColumn("Tgl Selesai");
+        this.orderModel.addColumn("Status");
+        
+        orderSorter = new TableRowSorter<TableModel>(orderModel);
+        orderTable.setRowSorter(orderSorter);
+        
+        
+        this.customerModel = new DefaultTableModel();
+        this.customerTable.setModel(this.customerModel);
+        
+        this.customerModel.addColumn("Id");
+        this.customerModel.addColumn("Nama");
+        this.customerModel.addColumn("Alamat");
+        this.customerModel.addColumn("Kontak");
+
+        customerSorter = new TableRowSorter<TableModel>(customerModel);
+        customerTable.setRowSorter(customerSorter);
+
+        this.refreshOrderTable();
+        this.refreshCustomerTable();
+    }
+
+    private void refreshOrderTable() {
+        String status = "";
+        
+        if (this.orderShow != "Semua") {
+            status = String.format("WHERE `order`.status = '%s'", this.orderShow.toLowerCase());
+        }
+        
+        String sql = String.format("SELECT `order`.id, apakah_di_antar, status, tgl_mulai, tgl_selesai, jenis, customer.nama as customer_nama FROM `order` LEFT JOIN customer ON customer.id = customer_id %s ORDER BY `order`.id DESC", status);
+
+        while (this.orderModel.getRowCount() > 0) {
+            this.orderModel.removeRow(0);
+        }
+        try (Connection conn = db.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql);) {
+
+            while (rs.next()) {
+                this.orderModel.addRow(new Object[]{rs.getInt("id"), rs.getString("customer_nama"), rs.getString("jenis"), rs.getString("tgl_mulai"), rs.getString("tgl_selesai"), rs.getBoolean("status")});
+            }
+
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
     }
     
+    private void refreshCustomerTable() {
+        String sql = String.format("SELECT * FROM customer ORDER BY id DESC");
+        while (this.customerModel.getRowCount() > 0) {
+            this.customerModel.removeRow(0);
+        }
+        try (Connection conn = db.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql);) {
+
+            while (rs.next()) {
+                this.customerModel.addRow(new Object[]{rs.getInt("id"), rs.getString("nama"), rs.getString("alamat"), rs.getString("kontak")});
+            }
+
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
+
     public void setAdmin(admin admin) {
         this.admin = admin;
     }
@@ -63,11 +148,15 @@ public class Dashboard extends javax.swing.JFrame {
         LabelBIOrderSelesai = new javax.swing.JLabel();
         TabOrder = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        orderTable = new javax.swing.JTable();
         cbOrderStatus = new javax.swing.JComboBox<>();
-        jTextField1 = new javax.swing.JTextField();
+        fieldCariOrderTable = new javax.swing.JTextField();
         Order_ButtonTambah = new javax.swing.JButton();
         TabCustomer = new javax.swing.JPanel();
+        fieldCariCustomerTable = new javax.swing.JTextField();
+        Customer_ButtonTambah = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        customerTable = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Laundry Sanjaya - Dashboard");
@@ -178,7 +267,7 @@ public class Dashboard extends javax.swing.JFrame {
 
         MainTab.addTab("Beranda", TabBeranda);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        orderTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -186,9 +275,20 @@ public class Dashboard extends javax.swing.JFrame {
                 "OrderID", "Nama Customer", "Jenis", "Tgl Mulai", "Tgl Selesai", "Status"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(orderTable);
 
-        cbOrderStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Semua", "Proses", "Diantar", "Selesai" }));
+        cbOrderStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Semua", "Antrian", "Proses", "Diantar", "Selesai" }));
+        cbOrderStatus.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbOrderStatusItemStateChanged(evt);
+            }
+        });
+
+        fieldCariOrderTable.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                fieldCariOrderTableKeyReleased(evt);
+            }
+        });
 
         Order_ButtonTambah.setText("Tambah");
         Order_ButtonTambah.addActionListener(new java.awt.event.ActionListener() {
@@ -205,7 +305,7 @@ public class Dashboard extends javax.swing.JFrame {
             .addGroup(TabOrderLayout.createSequentialGroup()
                 .addComponent(cbOrderStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1)
+                .addComponent(fieldCariOrderTable)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(Order_ButtonTambah, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -215,7 +315,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(TabOrderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cbOrderStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(fieldCariOrderTable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(Order_ButtonTambah))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -224,15 +324,57 @@ public class Dashboard extends javax.swing.JFrame {
 
         MainTab.addTab("Order", TabOrder);
 
+        fieldCariCustomerTable.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                fieldCariCustomerTableKeyReleased(evt);
+            }
+        });
+
+        Customer_ButtonTambah.setText("Tambah");
+        Customer_ButtonTambah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Customer_ButtonTambahActionPerformed(evt);
+            }
+        });
+
+        customerTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "OrderID", "Nama Customer", "Jenis", "Tgl Mulai", "Tgl Selesai", "Status"
+            }
+        ));
+        jScrollPane2.setViewportView(customerTable);
+
         javax.swing.GroupLayout TabCustomerLayout = new javax.swing.GroupLayout(TabCustomer);
         TabCustomer.setLayout(TabCustomerLayout);
         TabCustomerLayout.setHorizontalGroup(
             TabCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 566, Short.MAX_VALUE)
+            .addGroup(TabCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(TabCustomerLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(TabCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
+                        .addGroup(TabCustomerLayout.createSequentialGroup()
+                            .addComponent(fieldCariCustomerTable)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(Customer_ButtonTambah, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addContainerGap()))
         );
         TabCustomerLayout.setVerticalGroup(
             TabCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 252, Short.MAX_VALUE)
+            .addGroup(TabCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(TabCustomerLayout.createSequentialGroup()
+                    .addGap(9, 9, 9)
+                    .addGroup(TabCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(fieldCariCustomerTable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(Customer_ButtonTambah))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(9, 9, 9)))
         );
 
         MainTab.addTab("Customer", TabCustomer);
@@ -274,11 +416,41 @@ public class Dashboard extends javax.swing.JFrame {
         int indexTab = sourceTabbedPane.getSelectedIndex();
         String nameTab = sourceTabbedPane.getTitleAt(indexTab);
         //System.out.println("Tab Changed: " + nameTab);
-        
+
         if (nameTab.equals("Order")) {
             this.refreshOrderTable();
+        } else if (nameTab.equals("Customer")) {
+            this.refreshCustomerTable();
         }
     }//GEN-LAST:event_MainTabStateChanged
+
+    private void fieldCariOrderTableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldCariOrderTableKeyReleased
+        // TODO add your handling code here:
+        String text = fieldCariOrderTable.getText();
+        if (text.length() == 0) {
+            orderSorter.setRowFilter(null);
+        } else {
+            try {
+                orderSorter.setRowFilter(RowFilter.regexFilter(text));
+            } catch (PatternSyntaxException pse) {
+                System.out.println("Bad regex pattern");
+            }
+        }
+    }//GEN-LAST:event_fieldCariOrderTableKeyReleased
+
+    private void fieldCariCustomerTableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldCariCustomerTableKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fieldCariCustomerTableKeyReleased
+
+    private void Customer_ButtonTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Customer_ButtonTambahActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_Customer_ButtonTambahActionPerformed
+
+    private void cbOrderStatusItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbOrderStatusItemStateChanged
+        // TODO add your handling code here:
+        this.orderShow = cbOrderStatus.getSelectedItem().toString();
+        this.refreshOrderTable();
+    }//GEN-LAST:event_cbOrderStatusItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -316,6 +488,7 @@ public class Dashboard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Customer_ButtonTambah;
     private javax.swing.JLabel Label1;
     private javax.swing.JLabel Label10;
     private javax.swing.JLabel Label2;
@@ -334,9 +507,12 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JPanel TabCustomer;
     private javax.swing.JPanel TabOrder;
     private javax.swing.JComboBox<String> cbOrderStatus;
+    private javax.swing.JTable customerTable;
+    private javax.swing.JTextField fieldCariCustomerTable;
+    private javax.swing.JTextField fieldCariOrderTable;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable orderTable;
     // End of variables declaration//GEN-END:variables
 }

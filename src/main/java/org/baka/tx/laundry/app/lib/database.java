@@ -21,7 +21,7 @@ import org.baka.tx.laundry.app.model.order;
  */
 public class database {
 
-    private Connection connect() {
+    public Connection connect() {
         String userHomeDir = System.getProperty("user.home");
         String dbUrl = "jdbc:sqlite:" + userHomeDir + "/laundryapp.db";
         Connection conn = null;
