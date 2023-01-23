@@ -70,6 +70,7 @@ public class Dashboard extends javax.swing.JFrame {
         TabCustomer = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Laundry Sanjaya - Dashboard");
 
         jLabel1.setFont(new java.awt.Font("sansserif", 1, 18)); // NOI18N
         jLabel1.setText("Dashboard");
