@@ -6,17 +6,7 @@ package org.baka.tx.laundry.app.model;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-//admin_id INT NOT NULL, "
-//                    + "customer_id INT NOT NULL, "
-//                    + "tgl_mulai DATETIME NOT NULL, "
-//                    + "tgl_selesai DATETIME NOT NULL, "
-//                    + "apakah_di_antar BOOLEAN NOT NULL DEFAULT FALSE, "
-//                    + "jenis CHAR(50) NOT NULL, "
-//                    + "status CHAR(50) NOT NULL, "
-//                    + "harga_total INT NOT NULL, "
-//                    + "harga_dibayar INT NOT NULL, "
-//                    + "created_at DATETIME NOT NULL, "
-//                    + "updated_at DATETIME NOT NULL)
+
 /**
  *
  * @author tx
