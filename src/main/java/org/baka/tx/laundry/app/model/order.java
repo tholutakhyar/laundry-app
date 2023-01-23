@@ -39,7 +39,7 @@ public class order {
         this.jumlahYangHarusDibayar = 0;
         this.jumlahKembalian = -1;
         this.customer = new customer();
-        this.status = "antrian";
+        this.status = "antri";
     }
     
     private int getJenisHarga(String jenis) {

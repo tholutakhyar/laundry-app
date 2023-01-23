@@ -277,7 +277,7 @@ public class Dashboard extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(orderTable);
 
-        cbOrderStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Semua", "Antrian", "Proses", "Diantar", "Selesai" }));
+        cbOrderStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Semua", "Antri", "Proses", "Diantar", "Selesai" }));
         cbOrderStatus.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cbOrderStatusItemStateChanged(evt);

@@ -121,7 +121,7 @@ public class OrderAdd extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         fieldCustomerKontak = new javax.swing.JTextField();
-        jButton2 = new javax.swing.JButton();
+        buttonPilihCustomer = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         fieldTotalBerat = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
@@ -191,10 +191,10 @@ public class OrderAdd extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("Pilih");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        buttonPilihCustomer.setText("Pilih");
+        buttonPilihCustomer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                buttonPilihCustomerActionPerformed(evt);
             }
         });
 
@@ -293,7 +293,7 @@ public class OrderAdd extends javax.swing.JFrame {
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addComponent(fieldCustomerId, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))
+                                .addComponent(buttonPilihCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))
                             .addComponent(fieldCustomerNama, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(fieldCustomerPay, javax.swing.GroupLayout.Alignment.LEADING)
@@ -333,7 +333,7 @@ public class OrderAdd extends javax.swing.JFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                             .addComponent(fieldCustomerId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jButton2)))
+                                            .addComponent(buttonPilihCustomer)))
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel6)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -397,9 +397,9 @@ public class OrderAdd extends javax.swing.JFrame {
         doTambahOrder();
     }//GEN-LAST:event_buttonTambahActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void buttonPilihCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPilihCustomerActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_buttonPilihCustomerActionPerformed
 
     private void fieldTotalBeratInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_fieldTotalBeratInputMethodTextChanged
         // TODO add your handling code here:
@@ -520,6 +520,7 @@ public class OrderAdd extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonCancel;
+    private javax.swing.JButton buttonPilihCustomer;
     private javax.swing.JButton buttonTambah;
     private javax.swing.JCheckBox cbDiantar;
     private javax.swing.JComboBox<String> cbJenisCucian;
@@ -534,7 +535,6 @@ public class OrderAdd extends javax.swing.JFrame {
     private javax.swing.JTextField fieldHargaPay;
     private javax.swing.JTextField fieldHargaPerKg;
     private javax.swing.JTextField fieldTotalBerat;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
