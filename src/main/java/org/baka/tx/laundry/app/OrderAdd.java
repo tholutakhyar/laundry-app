@@ -24,6 +24,19 @@ public class OrderAdd extends javax.swing.JFrame {
         this.showPerKgPrice();
     }
     
+    public void resetForm() {
+        fieldCustomerId.setText(null);
+        fieldCustomerNama.setText(null);
+        fieldCustomerAlamat.setText(null);
+        fieldCustomerKontak.setText(null);
+        fieldHargaPerKg.setText("0");
+        fieldTotalBerat.setText("0");
+        fieldCustomerPay.setText("0");
+        fieldHargaPay.setText("0");
+        fieldCustomerPayChange.setText("0");
+        this.showPerKgPrice();
+    }
+    
     private void showPerKgPrice() {
         String orderJenisCucian = cbJenisCucian.getSelectedItem().toString();
         fieldHargaPerKg.setText(String.valueOf(this.getHarga(orderJenisCucian)));
@@ -84,9 +97,11 @@ public class OrderAdd extends javax.swing.JFrame {
         String orderMulai = dateMulai.getDateFormatString();
         String orderSelesai = dateSelesai.getDateFormatString();
         String orderJenisCucian = cbJenisCucian.getSelectedItem().toString();
+        boolean orderDiantar = cbDiantar.isSelected();
         int orderTotalKg = 0;
         int orderCustomerPay = 0;
         int orderTotalHarga = 0;
+        
         try {
             orderTotalKg = Integer.parseInt(fieldTotalBerat.getText());
             orderCustomerPay = Integer.parseInt(fieldCustomerPay.getText());
@@ -95,8 +110,6 @@ public class OrderAdd extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Tolong isi field dengan angka!", "Kesalahan", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
-        boolean orderDiantar = cbDiantar.isSelected();
         
         if (orderMulai.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Tolong isi Tgl Mulai!", "Kesalahan", JOptionPane.ERROR_MESSAGE);
@@ -393,6 +406,8 @@ public class OrderAdd extends javax.swing.JFrame {
 
     private void buttonTambah1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTambah1ActionPerformed
         // TODO add your handling code here:
+        this.setVisible(false);
+        this.resetForm();
     }//GEN-LAST:event_buttonTambah1ActionPerformed
 
     private void fieldTotalBeratKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldTotalBeratKeyReleased

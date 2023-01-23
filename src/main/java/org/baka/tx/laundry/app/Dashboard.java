@@ -256,6 +256,7 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void Order_ButtonTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Order_ButtonTambahActionPerformed
         // TODO add your handling code here:
+        od.resetForm();
         od.setVisible(true);
     }//GEN-LAST:event_Order_ButtonTambahActionPerformed
 
@@ -264,7 +265,7 @@ public class Dashboard extends javax.swing.JFrame {
         JTabbedPane sourceTabbedPane = (JTabbedPane) evt.getSource();
         int indexTab = sourceTabbedPane.getSelectedIndex();
         String nameTab = sourceTabbedPane.getTitleAt(indexTab);
-        System.out.println("Tab Changed: " + nameTab);
+        //System.out.println("Tab Changed: " + nameTab);
         
         if (nameTab.equals("Order")) {
             this.refreshOrderTable();
