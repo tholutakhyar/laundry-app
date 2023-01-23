@@ -49,6 +49,8 @@ public class OrderAdd extends javax.swing.JFrame {
         fieldCustomerPay.setText("0");
         fieldHargaPay.setText("0");
         fieldCustomerPayChange.setText("0");
+        dateMulai.setDate(null);
+        dateSelesai.setDate(null);
         this.showPerKgPrice();
     }
     
@@ -90,6 +92,7 @@ public class OrderAdd extends javax.swing.JFrame {
         
         if (this.db.addOrder(order)) {
             this.setVisible(false);
+            resetForm();
         } else {
             JOptionPane.showMessageDialog(this, "Maaf Ada sedikit gangguan, Silahkan Ulangi Lagi!", "Kesalahan", JOptionPane.ERROR_MESSAGE);
         }

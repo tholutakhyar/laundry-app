@@ -25,6 +25,7 @@ public class order {
     private int jumlahYangHarusDibayar;
     private int jumlahDibayar;
     private int jumlahKembalian;
+    private String status;
     
     public order() {
         this.id = 0;
@@ -38,6 +39,7 @@ public class order {
         this.jumlahYangHarusDibayar = 0;
         this.jumlahKembalian = -1;
         this.customer = new customer();
+        this.status = "antrian";
     }
     
     private int getJenisHarga(String jenis) {
@@ -182,5 +184,13 @@ public class order {
     
     public int getJumlahKembalian() {
         return this.jumlahKembalian;
+    }
+    
+    public String getStatus() {
+        return this.status;
+    }
+    
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

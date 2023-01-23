@@ -34,7 +34,7 @@ public class Dashboard extends javax.swing.JFrame {
     }
     
     public void setAdmin(admin admin) {
-        admin = admin;
+        this.admin = admin;
     }
 
     /**

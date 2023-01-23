@@ -6,6 +6,7 @@ package org.baka.tx.laundry.app.lib;
 
 import java.sql.DriverManager;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -125,17 +126,73 @@ public class database {
         return false;
     }
     
-    public boolean addCustomer(customer customer) {
-        return false;
+    public int addCustomer(customer customer) {
+        int id = 0;
+        try (Connection conn = this.connect(); Statement stmt = conn.createStatement()) {
+            String values = String.format("('%s', '%s', '%s', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)", customer.getNama(), customer.getAlamat(), customer.getKontak());
+            String sqlCustomer = "INSERT INTO customer"
+                    + "(nama, alamat, kontak, created_at, updated_at)"
+                    + "VALUES"
+                    + values;
+            
+            stmt.executeUpdate(sqlCustomer);
+            
+            ResultSet generatedKeys = stmt.executeQuery("SELECT last_insert_rowid()");
+            if (generatedKeys.next()) {
+                id = generatedKeys.getInt(1);
+            }
+
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            return id;
+        }
     }
 
     public boolean addOrder(order order) {
-        if (order.customer().getId() == 0) {
-            System.out.println("create customer");
-            this.addCustomer(order.customer());
+        try (Connection conn = this.connect(); Statement stmt = conn.createStatement()) {
+            if (order.customer().getId() == 0) {
+                System.out.println("create customer");
+                int customerId = this.addCustomer(order.customer());
+                
+                if (customerId == 0) {
+                    System.out.println("create customer failed sadkek");
+                    return false;
+                }
+                
+                order.customer().setId(customerId);
+            }
+            
+            String values = String.format("(%d, %d, '%s', '%s', %b, '%s', '%s', %d, %d, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+                    order.admin().getId(),
+                    order.customer().getId(),
+                    order.getTglMulaiFormatted(),
+                    order.getTglSelesaiFormatted(),
+                    order.apakahDiantar(),
+                    order.getJenis(),
+                    order.getStatus(),
+                    order.getTotalHarga(),
+                    order.getJumlahDibayar()
+                    );
+            
+            
+            String sql = "INSERT INTO `order`"
+                    + "(admin_id, customer_id, tgl_mulai, tgl_selesai, apakah_di_antar, jenis, status, harga_total, harga_dibayar, created_at, updated_at)"
+                    + "VALUES"
+                    + values;
+            
+            stmt.executeUpdate(sql);
+
+            stmt.close();
+            conn.close();
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        } finally {
+            return true;
         }
-        
-        
-        return false;
     }
 }
