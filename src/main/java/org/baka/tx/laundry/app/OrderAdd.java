@@ -4,11 +4,11 @@
  */
 package org.baka.tx.laundry.app;
 
+import java.awt.event.WindowEvent;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import org.baka.tx.laundry.app.lib.database;
 import org.baka.tx.laundry.app.model.admin;
-import org.baka.tx.laundry.app.model.customer;
 import org.baka.tx.laundry.app.model.order;
 
 /**
@@ -32,6 +32,11 @@ public class OrderAdd extends javax.swing.JFrame {
     
     public void setAdmin(admin admin) {
         this.admin = admin;
+    }
+    
+    private void closeThisFrame() {
+        this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));;
+        this.resetForm();
     }
     
     public void resetForm() {
@@ -91,8 +96,7 @@ public class OrderAdd extends javax.swing.JFrame {
         }
         
         if (this.db.addOrder(order)) {
-            this.setVisible(false);
-            resetForm();
+            closeThisFrame();
         } else {
             JOptionPane.showMessageDialog(this, "Maaf Ada sedikit gangguan, Silahkan Ulangi Lagi!", "Kesalahan", JOptionPane.ERROR_MESSAGE);
         }
@@ -133,7 +137,7 @@ public class OrderAdd extends javax.swing.JFrame {
         jLabel11 = new javax.swing.JLabel();
         fieldCustomerPayChange = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
-        buttonTambah1 = new javax.swing.JButton();
+        buttonCancel = new javax.swing.JButton();
         fieldHargaPerKg = new javax.swing.JTextField();
         jLabel13 = new javax.swing.JLabel();
 
@@ -159,6 +163,9 @@ public class OrderAdd extends javax.swing.JFrame {
         });
 
         fieldCustomerNama.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                fieldCustomerNamaKeyReleased(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 fieldCustomerNamaKeyTyped(evt);
             }
@@ -251,11 +258,11 @@ public class OrderAdd extends javax.swing.JFrame {
 
         jLabel12.setText("Kembalian Untuk Customer");
 
-        buttonTambah1.setBackground(new java.awt.Color(255, 204, 204));
-        buttonTambah1.setText("Batal");
-        buttonTambah1.addActionListener(new java.awt.event.ActionListener() {
+        buttonCancel.setBackground(new java.awt.Color(255, 204, 204));
+        buttonCancel.setText("Batal");
+        buttonCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonTambah1ActionPerformed(evt);
+                buttonCancelActionPerformed(evt);
             }
         });
 
@@ -272,7 +279,7 @@ public class OrderAdd extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(buttonTambah, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(buttonTambah1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(buttonCancel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(fieldHargaPay, javax.swing.GroupLayout.Alignment.LEADING)
@@ -378,7 +385,7 @@ public class OrderAdd extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(buttonTambah)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(buttonTambah1)
+                .addComponent(buttonCancel)
                 .addContainerGap(12, Short.MAX_VALUE))
         );
 
@@ -398,11 +405,10 @@ public class OrderAdd extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_fieldTotalBeratInputMethodTextChanged
 
-    private void buttonTambah1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTambah1ActionPerformed
+    private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed
         // TODO add your handling code here:
-        this.setVisible(false);
-        this.resetForm();
-    }//GEN-LAST:event_buttonTambah1ActionPerformed
+        closeThisFrame();
+    }//GEN-LAST:event_buttonCancelActionPerformed
 
     private void fieldTotalBeratKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldTotalBeratKeyReleased
         // TODO add your handling code here:
@@ -432,7 +438,6 @@ public class OrderAdd extends javax.swing.JFrame {
 
     private void fieldCustomerNamaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldCustomerNamaKeyTyped
         // TODO add your handling code here:
-        order.customer().setNama(fieldCustomerNama.getText());
     }//GEN-LAST:event_fieldCustomerNamaKeyTyped
 
     private void fieldCustomerAlamatKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldCustomerAlamatKeyReleased
@@ -472,6 +477,11 @@ public class OrderAdd extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_dateSelesaiPropertyChange
 
+    private void fieldCustomerNamaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldCustomerNamaKeyReleased
+        // TODO add your handling code here:
+        order.customer().setNama(fieldCustomerNama.getText());
+    }//GEN-LAST:event_fieldCustomerNamaKeyReleased
+
     /**
      * @param args the command line arguments
      */
@@ -509,8 +519,8 @@ public class OrderAdd extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonCancel;
     private javax.swing.JButton buttonTambah;
-    private javax.swing.JButton buttonTambah1;
     private javax.swing.JCheckBox cbDiantar;
     private javax.swing.JComboBox<String> cbJenisCucian;
     private com.toedter.calendar.JDateChooser dateMulai;

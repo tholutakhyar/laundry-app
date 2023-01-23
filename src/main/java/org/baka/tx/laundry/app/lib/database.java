@@ -150,6 +150,38 @@ public class database {
             return id;
         }
     }
+    
+    public boolean deleteCustomer(String id) {
+        try (Connection conn = this.connect(); Statement stmt = conn.createStatement()) {
+            String sqlCustomer = String.format("DELETE FROM `customer` WHERE ", id);
+            
+            stmt.executeUpdate(sqlCustomer);
+
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        } finally {
+            return true;
+        }
+    }
+    
+    public boolean updateCustomer(customer customer) {
+        try (Connection conn = this.connect(); Statement stmt = conn.createStatement()) {
+            String sqlCustomer = String.format("UPDATE `customer` SET updated_at = CURRENT_TIMESTAMP, nama = '%s', alamat = '%s', kontak = '%s' WHERE id = %d", customer.getNama(), customer.getAlamat(), customer.getKontak(), customer.getId());
+            
+            stmt.executeUpdate(sqlCustomer);
+            
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        } finally {
+            return true;
+        }
+    }
 
     public boolean addOrder(order order) {
         try (Connection conn = this.connect(); Statement stmt = conn.createStatement()) {

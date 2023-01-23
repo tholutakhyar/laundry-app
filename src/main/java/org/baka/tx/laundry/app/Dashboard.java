@@ -4,12 +4,16 @@
  */
 package org.baka.tx.laundry.app;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.regex.PatternSyntaxException;
+import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -26,7 +30,6 @@ public class Dashboard extends javax.swing.JFrame {
     /**
      * Creates new form Dashboard
      */
-    OrderAdd od;
     database db = null;
     admin admin;
     private DefaultTableModel orderModel;
@@ -39,9 +42,6 @@ public class Dashboard extends javax.swing.JFrame {
     public Dashboard() {
         initComponents();
         this.setLocationRelativeTo(null);
-        od = new OrderAdd();
-        od.setAlwaysOnTop(true);
-        od.setLocationRelativeTo(null);
         db = new database();
 
         this.orderModel = new DefaultTableModel();
@@ -88,7 +88,7 @@ public class Dashboard extends javax.swing.JFrame {
         try (Connection conn = db.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql);) {
 
             while (rs.next()) {
-                this.orderModel.addRow(new Object[]{rs.getInt("id"), rs.getString("customer_nama"), rs.getString("jenis"), rs.getString("tgl_mulai"), rs.getString("tgl_selesai"), rs.getBoolean("status")});
+                this.orderModel.addRow(new Object[]{rs.getInt("id"), rs.getString("customer_nama"), rs.getString("jenis"), rs.getString("tgl_mulai"), rs.getString("tgl_selesai"), rs.getString("status")});
             }
 
             stmt.close();
@@ -345,6 +345,11 @@ public class Dashboard extends javax.swing.JFrame {
                 "OrderID", "Nama Customer", "Jenis", "Tgl Mulai", "Tgl Selesai", "Status"
             }
         ));
+        customerTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                customerTableMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(customerTable);
 
         javax.swing.GroupLayout TabCustomerLayout = new javax.swing.GroupLayout(TabCustomer);
@@ -405,9 +410,18 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void Order_ButtonTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Order_ButtonTambahActionPerformed
         // TODO add your handling code here:
+        OrderAdd od = new OrderAdd();
+        od.setAlwaysOnTop(true);
+        od.setLocationRelativeTo(null);
         od.setAdmin(admin);
         od.resetForm();
         od.setVisible(true);
+        od.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                refreshOrderTable();
+            }
+        });
     }//GEN-LAST:event_Order_ButtonTambahActionPerformed
 
     private void MainTabStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_MainTabStateChanged
@@ -454,6 +468,18 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void Customer_ButtonTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Customer_ButtonTambahActionPerformed
         // TODO add your handling code here:
+        CustomerAdd ca = new CustomerAdd();
+        ca.setAlwaysOnTop(true);
+        ca.setLocationRelativeTo(null);
+        ca.setAdmin(admin);
+        ca.resetForm();
+        ca.setVisible(true);
+        ca.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                refreshCustomerTable();
+            }
+        });
     }//GEN-LAST:event_Customer_ButtonTambahActionPerformed
 
     private void cbOrderStatusItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbOrderStatusItemStateChanged
@@ -461,6 +487,32 @@ public class Dashboard extends javax.swing.JFrame {
         this.orderShow = cbOrderStatus.getSelectedItem().toString();
         this.refreshOrderTable();
     }//GEN-LAST:event_cbOrderStatusItemStateChanged
+
+    private void customerTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_customerTableMouseClicked
+        // TODO add your handling code here:
+        JTable source = (JTable) evt.getSource();
+        int row = source.rowAtPoint( evt.getPoint() );
+        int column = source.columnAtPoint( evt.getPoint() );
+        String id = String.valueOf(source.getModel().getValueAt(row, 0));
+        String nama = String.valueOf(source.getModel().getValueAt(row, 1));
+        String alamat = String.valueOf(source.getModel().getValueAt(row, 2));
+        String kontak = String.valueOf(source.getModel().getValueAt(row, 3));
+
+
+
+        CustomerEdit ce = new CustomerEdit();
+        ce.setAlwaysOnTop(true);
+        ce.setLocationRelativeTo(null);
+        ce.setAdmin(admin);
+        ce.setForm(id, nama, alamat, kontak);
+        ce.setVisible(true);
+        ce.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                refreshCustomerTable();
+            }
+        });
+    }//GEN-LAST:event_customerTableMouseClicked
 
     /**
      * @param args the command line arguments
