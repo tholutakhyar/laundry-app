@@ -242,6 +242,16 @@ public class OrderAdd extends javax.swing.JFrame {
         jLabel9.setText("Jenis");
 
         cbDiantar.setText("Diantar?");
+        cbDiantar.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbDiantarItemStateChanged(evt);
+            }
+        });
+        cbDiantar.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                cbDiantarPropertyChange(evt);
+            }
+        });
 
         fieldHargaPay.setEditable(false);
         fieldHargaPay.setForeground(new java.awt.Color(153, 153, 153));
@@ -522,6 +532,20 @@ public class OrderAdd extends javax.swing.JFrame {
         fieldCustomerAlamat.setText(order.customer().getAlamat());
         fieldCustomerKontak.setText(order.customer().getKontak());
     }//GEN-LAST:event_buttonBatalPilihCustomerActionPerformed
+
+    private void cbDiantarPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_cbDiantarPropertyChange
+        // TODO add your handling code here:
+        if ("selected".equals(evt.getPropertyName())) {
+            try {
+                order.setApakahDiantar(cbDiantar.isSelected());
+            } catch (Exception e) {}
+        }
+    }//GEN-LAST:event_cbDiantarPropertyChange
+
+    private void cbDiantarItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbDiantarItemStateChanged
+        // TODO add your handling code here:
+        order.setApakahDiantar(cbDiantar.isSelected());
+    }//GEN-LAST:event_cbDiantarItemStateChanged
 
     /**
      * @param args the command line arguments

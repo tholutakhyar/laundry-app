@@ -20,6 +20,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.baka.tx.laundry.app.lib.database;
 import org.baka.tx.laundry.app.model.admin;
+import org.baka.tx.laundry.app.model.order;
 
 /**
  *
@@ -288,6 +289,11 @@ public class Dashboard extends javax.swing.JFrame {
                 "OrderID", "Nama Customer", "Jenis", "Tgl Mulai", "Tgl Selesai", "Status"
             }
         ));
+        orderTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                orderTableMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(orderTable);
 
         cbOrderStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Semua", "Antri", "Proses", "Diantar", "Selesai" }));
@@ -531,6 +537,27 @@ public class Dashboard extends javax.swing.JFrame {
             });
         }
     }//GEN-LAST:event_customerTableMouseClicked
+
+    private void orderTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_orderTableMouseClicked
+        // TODO add your handling code here:
+        int row[] = orderTable.getSelectedRows();
+        if (row.length > 0) {
+            String id = String.valueOf(orderTable.getValueAt(row[0], 0));
+            order order = this.db.getOrder(id);
+            OrderAction oa = new OrderAction();
+            oa.setAlwaysOnTop(true);
+            oa.setLocationRelativeTo(null);
+            oa.setAdmin(admin);
+            oa.setForm(order);
+            oa.setVisible(true);
+            oa.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    refreshOrderTable();
+                }
+            });
+        }
+    }//GEN-LAST:event_orderTableMouseClicked
 
     /**
      * @param args the command line arguments

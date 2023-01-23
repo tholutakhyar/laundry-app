@@ -10,8 +10,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.baka.tx.laundry.app.model.admin;
 import org.baka.tx.laundry.app.model.customer;
 import org.baka.tx.laundry.app.model.order;
 
@@ -86,8 +88,9 @@ public class database {
                     + "apakah_di_antar BOOLEAN NOT NULL DEFAULT FALSE, "
                     + "jenis CHAR(50) NOT NULL, "
                     + "status CHAR(50) NOT NULL, "
-                    + "harga_total INT NOT NULL, "
                     + "harga_dibayar INT NOT NULL, "
+                    + "harga_perkg INT NOT NULL, "
+                    + "total_berat INT NOT NULL, "
                     + "created_at DATETIME NOT NULL, "
                     + "updated_at DATETIME NOT NULL)";
 
@@ -277,6 +280,54 @@ public class database {
             return true;
         }
     }
+    
+    public order getOrder(String id) {
+        String sql = String.format(""
+                + "SELECT " +
+                "`order`.*, " +
+                "customer.id as customerId, " +
+                "customer.nama as customerNama, " +
+                "customer.alamat as customerAlamat, " +
+                "customer.kontak as customerKontak, " +
+                "admin.id as adminId, " +
+                "admin.username as adminUsername " +
+                "FROM `order` " +
+                "INNER JOIN customer ON customer.id = `order`.customer_id " +
+                "INNER JOIN admin ON admin.id = `order`.admin_id " +
+                "WHERE `order`.id = %d ", Integer.parseInt(id));
+        
+        order order = new order();
+        try (Connection conn = this.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql);) {
+            if (rs.next()) {
+                customer customer = new customer();
+                customer.setId(rs.getInt("customerId"));
+                customer.setNama(rs.getString("customerNama"));
+                customer.setAlamat(rs.getString("customerAlamat"));
+                customer.setKontak(rs.getString("customerKontak"));
+                order.setCustomer(customer);
+                
+                admin adminx = new admin(rs.getInt("adminId"), rs.getString("adminUsername"), "");
+                order.setAdmin(adminx);
+                
+                order.setId(rs.getInt("id"));
+                order.setJenis(rs.getString("jenis"));
+                order.setApakahDiantar(rs.getBoolean("apakah_di_antar"));
+                order.setTglMulai(Timestamp.valueOf(rs.getString("tgl_mulai")));
+                order.setTglSelesai(Timestamp.valueOf(rs.getString("tgl_selesai")));
+                order.setStatus(rs.getString("status"));
+                order.setTotalBerat(Integer.parseInt(rs.getString("total_berat")));
+                order.setJumlahDibayar(Integer.parseInt(rs.getString("harga_dibayar")));
+            }
+            
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return order;
+        } finally {
+            return order;
+        }
+    }
 
     public boolean addOrder(order order) {
         try (Connection conn = this.connect(); Statement stmt = conn.createStatement()) {
@@ -292,7 +343,7 @@ public class database {
                 order.customer().setId(customerId);
             }
             
-            String values = String.format("(%d, %d, '%s', '%s', %b, '%s', '%s', %d, %d, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+            String values = String.format("(%d, %d, '%s', '%s', %b, '%s', '%s', %d, %d, %d, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
                     order.admin().getId(),
                     order.customer().getId(),
                     order.getTglMulaiFormatted(),
@@ -300,13 +351,14 @@ public class database {
                     order.apakahDiantar(),
                     order.getJenis(),
                     order.getStatus(),
-                    order.getTotalHarga(),
-                    order.getJumlahDibayar()
+                    order.getJumlahDibayar(),
+                    order.getHargaPerKg(),
+                    order.getTotalBerat()
                     );
             
             
             String sql = "INSERT INTO `order`"
-                    + "(admin_id, customer_id, tgl_mulai, tgl_selesai, apakah_di_antar, jenis, status, harga_total, harga_dibayar, created_at, updated_at)"
+                    + "(admin_id, customer_id, tgl_mulai, tgl_selesai, apakah_di_antar, jenis, status, harga_dibayar, harga_perkg, total_berat, created_at, updated_at)"
                     + "VALUES"
                     + values;
             
@@ -315,6 +367,24 @@ public class database {
             stmt.close();
             conn.close();
             
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        } finally {
+            return true;
+        }
+    }
+    
+    public boolean updateStatusOrder(String id, String status) {
+        try (Connection conn = this.connect(); Statement stmt = conn.createStatement()) {
+            String sql = String.format("UPDATE `order` SET updated_at = CURRENT_TIMESTAMP, status = '%s' WHERE id = %s AND status != 'selesai'", status, id);
+            
+            if ("selesai".equals(status)) sql = String.format("UPDATE `order` SET updated_at = CURRENT_TIMESTAMP, tgl_selesai = CURRENT_TIMESTAMP, status = '%s' WHERE id = %s", status, id);
+            
+            stmt.executeUpdate(sql);
+            
+            stmt.close();
+            conn.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return false;
