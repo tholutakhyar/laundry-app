@@ -440,6 +440,16 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void fieldCariCustomerTableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldCariCustomerTableKeyReleased
         // TODO add your handling code here:
+        String text = fieldCariCustomerTable.getText();
+        if (text.length() == 0) {
+            customerSorter.setRowFilter(null);
+        } else {
+            try {
+                customerSorter.setRowFilter(RowFilter.regexFilter(text));
+            } catch (PatternSyntaxException pse) {
+                System.out.println("Bad regex pattern");
+            }
+        }
     }//GEN-LAST:event_fieldCariCustomerTableKeyReleased
 
     private void Customer_ButtonTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Customer_ButtonTambahActionPerformed
