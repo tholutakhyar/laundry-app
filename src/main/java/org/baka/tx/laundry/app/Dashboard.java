@@ -490,28 +490,26 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void customerTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_customerTableMouseClicked
         // TODO add your handling code here:
-        JTable source = (JTable) evt.getSource();
-        int row = source.rowAtPoint( evt.getPoint() );
-        int column = source.columnAtPoint( evt.getPoint() );
-        String id = String.valueOf(source.getModel().getValueAt(row, 0));
-        String nama = String.valueOf(source.getModel().getValueAt(row, 1));
-        String alamat = String.valueOf(source.getModel().getValueAt(row, 2));
-        String kontak = String.valueOf(source.getModel().getValueAt(row, 3));
-
-
-
-        CustomerEdit ce = new CustomerEdit();
-        ce.setAlwaysOnTop(true);
-        ce.setLocationRelativeTo(null);
-        ce.setAdmin(admin);
-        ce.setForm(id, nama, alamat, kontak);
-        ce.setVisible(true);
-        ce.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                refreshCustomerTable();
-            }
-        });
+        int row[] = customerTable.getSelectedRows();
+        if (row.length > 0) {
+            String id = String.valueOf(customerTable.getValueAt(row[0], 0));
+            String nama = String.valueOf(customerTable.getValueAt(row[0], 1));
+            String alamat = String.valueOf(customerTable.getValueAt(row[0], 2));
+            String kontak = String.valueOf(customerTable.getValueAt(row[0], 3));
+            
+            CustomerEdit ce = new CustomerEdit();
+            ce.setAlwaysOnTop(true);
+            ce.setLocationRelativeTo(null);
+            ce.setAdmin(admin);
+            ce.setForm(id, nama, alamat, kontak);
+            ce.setVisible(true);
+            ce.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    refreshCustomerTable();
+                }
+            });
+        }
     }//GEN-LAST:event_customerTableMouseClicked
 
     /**
